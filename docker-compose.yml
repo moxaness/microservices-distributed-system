@@ -1,0 +1,146 @@
+ services:
+   postgres:
+     container_name: postgres
+     image : postgres
+     environment:
+       POSTGRES_USER: anescode
+       POSTGRES_PASSWORD: password
+       PGDATA: /data/postgres
+     volumes:
+       - postgres:/data/postgres
+     ports:
+       - "5432:5432"
+     networks:
+       - postgres
+     restart: unless-stopped
+
+   pgadmin:
+     container_name: pgadmin
+     image: dpage/pgadmin4
+     environment:
+       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@anescode.com}
+       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-password}
+       PGADMIN_CONFIG_SERVER_MODE: 'False'
+     volumes:
+       - pgadmin:/var/lib/pgadmin
+     ports:
+       - "5050:80"
+     networks:
+       - postgres
+     restart : unless-stopped
+
+   zipkin:
+     image: ghcr.io/openzipkin/zipkin-slim:${TAG:-latest}
+     container_name: zipkin
+     ports:
+       - "9411:9411"
+     networks:
+       - spring
+
+   rabbitmq:
+     image: rabbitmq:3.9.11-management-alpine
+     container_name: rabbitmq
+     ports:
+       - "5672:5672"
+       - "15672:15672"
+     networks:
+       - spring
+
+#   eureka-server:
+#     image: moxanes/eureka-server:latest
+#     container_name: eureka-server
+#     ports:
+#       - "8761:8761"
+#     environment:
+#       - SPRING_PROFILES_ACTIVE=docker
+#     networks:
+#       - spring
+#     depends_on:
+#       - zipkin
+
+#   apigw:
+#     image: moxanes/apigw:latest
+#     container_name: apigw
+#     ports:
+#       - "8083:8083"
+#     environment:
+#       - SPRING_PROFILES_ACTIVE=docker
+#     networks:
+#       - spring
+#     depends_on:
+#       - zipkin
+#       - eureka-server
+
+#   customer:
+#     image: moxanes/customer:latest
+#     container_name: customer
+#     ports:
+#       - "8080:8080"
+#     environment:
+#       - SPRING_PROFILES_ACTIVE=client-docker
+#       - SPRING_RABBITMQ_ADDRESSES=rabbitmq:5672
+#       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/anescode
+#       - SPRING_ZIPKIN_BASE_URL=http://zipkin:9411
+#       - EUREKA_CLIENT_ENABLED=false
+#       - SPRING_CLOUD_DISCOVERY_ENABLED=false
+#
+#     networks:
+#       - spring
+#       - postgres
+#     depends_on:
+#       - zipkin
+#       - postgres
+#       - rabbitmq
+#
+#   fraud:
+#     image: moxanes/fraud:latest
+#     container_name: fraud
+#     ports:
+#       - "8081:8081"
+#     environment:
+#       - SPRING_PROFILES_ACTIVE=client-docker
+#       - SPRING_RABBITMQ_ADDRESSES=rabbitmq:5672
+#       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/anescode
+#       - SPRING_ZIPKIN_BASE_URL=http://zipkin:9411
+#       - EUREKA_CLIENT_ENABLED=false
+#       - SPRING_CLOUD_DISCOVERY_ENABLED=false
+#     networks:
+#       - spring
+#       - postgres
+#     depends_on:
+#       - zipkin
+#       - postgres
+#       - rabbitmq
+#
+#   notification:
+#     image: moxanes/notification:latest
+#     container_name: notification
+#     ports:
+#       - "8082:8082"
+#     environment:
+#       - SPRING_PROFILES_ACTIVE=client-docker
+#       - SPRING_RABBITMQ_ADDRESSES=rabbitmq:5672
+#       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/anescode
+#       - SPRING_ZIPKIN_BASE_URL=http://zipkin:9411
+#       - EUREKA_CLIENT_ENABLED=false
+#       - SPRING_CLOUD_DISCOVERY_ENABLED=false
+#
+#     networks:
+#       - spring
+#       - postgres
+#     depends_on:
+#       - zipkin
+#       - postgres
+#       - rabbitmq
+#
+#
+ networks:
+   postgres:
+     driver: bridge
+   spring:
+     driver: bridge
+
+ volumes:
+   postgres:
+   pgadmin:
+
