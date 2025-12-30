@@ -89,12 +89,14 @@ It is designed with scalability, resilience, and clean separation of concerns in
 ```bash
 git clone https://github.com/your-username/microservices-distributed-system.git
 cd microservices-distributed-system
-## 2️⃣ Build the Project
+```
+
+### 2️⃣ Build the Project
 ```bash
 mvn clean install
 ```
 
-## 3️⃣ Start Infrastructure with Docker Compose
+### 3️⃣ Start Infrastructure with Docker Compose
 ```bash
 docker-compose up -d
 ```
